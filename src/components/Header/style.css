@@ -1,0 +1,33 @@
+.nav-item select {
+    border:0px;
+    outline:0px;
+}
+
+.container-fluid .align-items-center {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.container-fluid .align-items-center li:not(:first-child){
+    padding-top: 0.5rem
+}
+
+.fs-4 {
+    font-family: 'Varela Round', sans-serif;
+    font-size: calc(2rem + .3vw)!important;
+    font-weight: 600;
+    color: #163445;
+
+}
+
+ul {
+    font-family: 'Varela Round', sans-serif;
+}
+
+li .nav-link,
+li .nav-item {
+    background-color: rgb(34, 136, 153);
+    border-color: rgb(34, 136, 153);
+    color:#163445;
+}

@@ -1,0 +1,24 @@
+.form-floating {
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background-color: rgb(16, 111, 128);
+    border-color: rgb(16, 111, 128);
+    color: #fff;
+    outline: none;
+}
+
+.btn-signup {
+    background-color: white;
+    border-color: rgb(16, 111, 128);
+    color: rgb(16, 111, 128);
+}
+
+.btn-signup:hover,
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: rgb(34, 136, 153);
+    border-color: rgb(34, 136, 153);
+    color: #fff;
+}
