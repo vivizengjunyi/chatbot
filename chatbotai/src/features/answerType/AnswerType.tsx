@@ -3,7 +3,7 @@ import { Question } from "../../questions";
 import moment from "moment";
 import DatePicker from "react-datepicker";
 
-export const getEditInput = (question: Question, isFromModal: boolean, editingAnswer: any, setEditingAnswer:any) => {
+export const getEditInput = (question: Question, isFromModal: boolean, editingAnswer: any, setEditingAnswer:any, callback:any) => {
   if (!question) return null;
   // const _editingAnswer = isFromModal ? modalEditingAnswer : editingAnswer;
   // const _setEditingAnswer = (value) => {
@@ -30,7 +30,7 @@ export const getEditInput = (question: Question, isFromModal: boolean, editingAn
           Please select...
         </option>
         {options.map((item) => (
-          <option key={item?.id} data-tokens={item} value={item?.id}>
+          <option key={item?.id} data-tokens={item} value={item?.name}>
             {item?.name}
           </option>
         ))}
@@ -92,15 +92,14 @@ export const getEditInput = (question: Question, isFromModal: boolean, editingAn
   return (
     <input
       type="text"
-      className="form-control"
+      className="border-2 border-sky-500"
       style={{ width: "100%" }}
-      aria-describedby="basic-addon1"
       value={editingAnswer}
-    //   onKeyDown={(e) => {
-    //     if (e.key === "Enter") {
-    //       handleAnswer();
-    //     }
-    //   }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          callback();
+        }
+      }}
       onChange={(event) => {
         setEditingAnswer(event.target.value);
       }}

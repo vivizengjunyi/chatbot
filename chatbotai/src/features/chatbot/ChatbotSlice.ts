@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 
-interface Answer {
-  id: number;
-  answer: string;
-  questionTimestamp: string;
-  answerTimestamp: string;
+export interface Answer {
+  id: number | undefined;
+  answer: string | undefined;
+  questionTimestamp?: string | undefined;
+  answerTimestamp?: any;
 }
 
 export interface AnswerState {

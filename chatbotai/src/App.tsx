@@ -19,10 +19,10 @@ function App() {
     return () => clearTimeout(timer);
   }, [errorMessage]);
   return (
-    <div className="App">
+    <div className="w-full">
       <div
         id="toast-container"
-        className="fixed inset-0 flex items-start justify-center pointer-events-none px-4 py-6 sm:p-6"
+        className=""
       >
         <div
           className={

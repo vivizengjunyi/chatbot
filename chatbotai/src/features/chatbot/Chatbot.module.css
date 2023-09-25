@@ -1,0 +1,15 @@
+@keyframes last-question-animation {
+    from {
+      opacity: 0.5;
+      top: 10px;
+    }
+    to {
+      opacity: 1;
+      top: 0;
+    }
+  }
+  
+  .slow {
+    animation: last-question-animation 1s ease-in-out;
+    position: relative;
+  }
