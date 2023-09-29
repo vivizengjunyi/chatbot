@@ -3,16 +3,8 @@ import { Question } from "../../questions";
 import moment from "moment";
 import DatePicker from "react-datepicker";
 
-export const getEditInput = (question: Question, isFromModal: boolean, editingAnswer: any, setEditingAnswer:any, callback:any) => {
+export const getEditInput = (question: Question | undefined, isFromModal: boolean, editingAnswer: any, setEditingAnswer:any, callback:any) => {
   if (!question) return null;
-  // const _editingAnswer = isFromModal ? modalEditingAnswer : editingAnswer;
-  // const _setEditingAnswer = (value) => {
-  //   if (isFromModal) {
-  //     setModalEditingAnswer(value);
-  //   } else {
-  //     setEditingAnswer(value);
-  //   }
-  // };
   const { options, answerType } = question;
   if (answerType === "dropdown") {
     return options ? (

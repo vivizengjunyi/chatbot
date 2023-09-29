@@ -4,8 +4,13 @@ import { RootState } from "../../app/store";
 export interface Answer {
   id: number | undefined;
   answer: string | undefined;
-  questionTimestamp?: string | undefined;
-  answerTimestamp?: any;
+  questionTimestamp?: any;
+  answerTimestamp: any;
+}
+
+export interface ActionPayload {
+  answerObj: Answer,
+  fromModal: boolean,
 }
 
 export interface AnswerState {
@@ -20,8 +25,19 @@ const chatbotSlice = createSlice({
   name: "chatbot",
   initialState,
   reducers: {
-    setAnswersArray: (state, action: PayloadAction<Answer>) => {
-      state.answers = [...state.answers, action.payload];
+    setAnswersArray: (state, action: PayloadAction<ActionPayload>) => {
+      if (!action.payload.fromModal) {
+        state.answers = [...state.answers, action.payload.answerObj];
+        return;
+      } else {
+        const findMatch: Answer | undefined = state.answers.find(item => item.id === action.payload.answerObj.id);
+        if (findMatch) {
+           findMatch.answer = action.payload.answerObj.answer;
+            findMatch.answerTimestamp = action.payload.answerObj.answerTimestamp;
+        }else {
+          return;
+        }
+      }
     },
   },
 });

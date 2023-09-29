@@ -5,6 +5,8 @@ export interface Question {
     options: {id: number; name: string}[] | null;
     nextQuestion: { id: number; value: string | number | null }[] | null;
     answer?: any;
+    questionTimestamp?: any;
+    answerTimestamp?: any;
   } 
 export const questions: Question[] = [
     {
