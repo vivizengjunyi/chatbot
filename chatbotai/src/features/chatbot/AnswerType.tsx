@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Question } from "../../questions";
 import moment from "moment";
 import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export const getEditInput = (question: Question | undefined, editingAnswer: any, handleStateEditing:any, callback:any) => {
   if (!question) return null;

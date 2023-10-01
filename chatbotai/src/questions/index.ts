@@ -22,7 +22,7 @@ export const questions: Question[] = [
     {
         id: 2,
         question: 'What is your last name?',
-        answerType: 'text',
+        answerType: 'date',
         options: null,
         nextQuestion: [{
             id: 3,
