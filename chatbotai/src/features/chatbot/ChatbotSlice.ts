@@ -4,8 +4,8 @@ import { RootState } from "../../app/store";
 export interface Answer {
   id: number | undefined;
   answer: string | undefined;
-  questionTimestamp?: any;
-  answerTimestamp: any;
+  questionTimestamp?: Date | undefined;
+  answerTimestamp: Date | undefined;
 }
 
 export interface ActionPayload {

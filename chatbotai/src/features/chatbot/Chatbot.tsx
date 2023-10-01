@@ -2,8 +2,9 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { setAnswersArray, answersArray} from "./ChatbotSlice";
 import { questions, Question } from "../../questions";
-import { getEditInput } from "../answerType/AnswerType";
-import Modal from "./modal";
+import { getEditInput } from "./AnswerType";
+import { setError } from "../../AppSlice";
+import Modal from "./Modal";
 import styles from "./Chatbot.module.css";
 import { SiProbot } from "react-icons/si";
 import { PiPencilBold } from "react-icons/pi";
@@ -12,7 +13,6 @@ const Chatbot = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [editingAnswer, setEditingAnswer] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [fromModal, setFromModal] = useState(false);
   const [questionIndexInModal, setQuestionIndexInModal] = useState<number>(-1);
   const answers = useAppSelector(answersArray);
   const dispatch = useAppDispatch();
@@ -48,10 +48,12 @@ const Chatbot = () => {
         nextQuestionConfig.questionTimestamp = questionTime;
         result.push(nextQuestionConfig);
       }
+      setEditingAnswer("");
     } else {
       const nextQuestionId: number | undefined = nextQuestion?.find(
         (item) => item.value === editingAnswer
       )?.id;
+      setEditingAnswer("");
       const nextQuestionConfig: Question | undefined = questions.find(
         (item) => item.id === nextQuestionId
       );
@@ -63,10 +65,13 @@ const Chatbot = () => {
     }
     console.log(result);
     return result;
-  }, [answers, currentQuestionIndex, editingAnswer]);
+  }, [answers, currentQuestionIndex]);
   useEffect(scrollToBottom, [displayQuestions]);
   const handleAnswer = () => {
-    if (!editingAnswer) return;
+    if (!editingAnswer) {
+      dispatch(setError("Please enter your answer"));
+      return;
+    };
     dispatch(
       setAnswersArray({answerObj: {
         id: displayQuestions?.[currentQuestionIndex].id,
@@ -88,6 +93,12 @@ const Chatbot = () => {
     }
     return time.toLocaleString("en-CA");
   };
+  const handleStateEditingAnswer = (value: any) => {
+    setEditingAnswer(value);
+  }
+  const handleStateShowModal = (value: boolean) => {
+    setShowModal(value);
+  }
   return (
     <div className="flex flex-col items-center">
       <div>
@@ -126,6 +137,7 @@ const Chatbot = () => {
                           {answer}
                         </span>
                         <PiPencilBold className="w-5 h-5 fill-cyan-500" onClick={() => {
+                          setEditingAnswer(answer);
                           setShowModal(true);
                           setQuestionIndexInModal(i);
                           }}/>
@@ -147,10 +159,9 @@ const Chatbot = () => {
                 {displayQuestions &&
                   getEditInput(
                     displayQuestions[currentQuestionIndex],
-                    false,
                     editingAnswer,
-                    setEditingAnswer,
-                    () => handleAnswer()
+                    handleStateEditingAnswer,
+                    handleAnswer
                   )}
               </div>
               <div className="col-12 col-sm-12 col-md-12 col-lg-4">
@@ -167,7 +178,7 @@ const Chatbot = () => {
         </div>
       </div>
       {
-        showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions}/>
+        showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions} handleStateShowModal={handleStateShowModal} editingAnswer={editingAnswer}/>
       }
     </div>
   );

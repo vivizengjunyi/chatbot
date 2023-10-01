@@ -3,7 +3,7 @@ import { Question } from "../../questions";
 import moment from "moment";
 import DatePicker from "react-datepicker";
 
-export const getEditInput = (question: Question | undefined, isFromModal: boolean, editingAnswer: any, setEditingAnswer:any, callback:any) => {
+export const getEditInput = (question: Question | undefined, editingAnswer: any, handleStateEditing:any, callback:any) => {
   if (!question) return null;
   const { options, answerType } = question;
   if (answerType === "dropdown") {
@@ -15,7 +15,7 @@ export const getEditInput = (question: Question | undefined, isFromModal: boolea
         data-live-search="true"
         value={editingAnswer}
         onChange={(event) => {
-          setEditingAnswer(event.target.value);
+          handleStateEditing(event.target.value);
         }}
       >
         <option key="empty" value="">
@@ -40,7 +40,7 @@ export const getEditInput = (question: Question | undefined, isFromModal: boolea
         dateFormat="yyyy/MM/dd"
         onChange={(date) => {
           const newValue = moment(date).format("YYYY/MM/DD");
-          setEditingAnswer(newValue);
+          handleStateEditing(newValue);
         }}
       />
     );
@@ -56,9 +56,9 @@ export const getEditInput = (question: Question | undefined, isFromModal: boolea
           type="radio"
           name="status"
           checked={editingAnswer === yesValue}
-          onChange={(e: any) => {
+          onChange={(e) => {
             const value = e.target.checked ? yesValue : noValue;
-            setEditingAnswer(value);
+            handleStateEditing(value);
           }}
         />
         <label htmlFor="yes" className="peer-checked/draft:text-sky-500">
@@ -70,9 +70,9 @@ export const getEditInput = (question: Question | undefined, isFromModal: boolea
           type="radio"
           name="status"
           checked={editingAnswer === noValue}
-          onChange={(e: any) => {
+          onChange={(e) => {
             const value = e.target.checked ? noValue : yesValue;
-            setEditingAnswer(value);
+            handleStateEditing(value);
           }}
         />
         <label htmlFor="no" className="peer-checked/draft:text-sky-500">
@@ -93,7 +93,7 @@ export const getEditInput = (question: Question | undefined, isFromModal: boolea
         }
       }}
       onChange={(event) => {
-        setEditingAnswer(event.target.value);
+        handleStateEditing(event.target.value);
       }}
     />
   );
