@@ -4,7 +4,7 @@ import moment from "moment";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-export const getEditInput = (question: Question | undefined, editingAnswer: any, handleStateEditing:any, callback:any) => {
+export const getEditInput = (question: Question | undefined, editingAnswer: any, setEditingAnswerByModal: any, callback: any) => {
   if (!question) return null;
   const { options, answerType } = question;
   if (answerType === "dropdown") {
@@ -16,7 +16,7 @@ export const getEditInput = (question: Question | undefined, editingAnswer: any,
         data-live-search="true"
         value={editingAnswer}
         onChange={(event) => {
-          handleStateEditing(event.target.value);
+          setEditingAnswerByModal(event.target.value);
         }}
       >
         <option key="empty" value="">
@@ -35,15 +35,15 @@ export const getEditInput = (question: Question | undefined, editingAnswer: any,
       ? moment(editingAnswer, "YYYY/MM/DD").toDate()
       : new Date();
     return (
-      <DatePicker
-        selected={selectedDate}
-        className="form-control datepicker"
-        dateFormat="yyyy/MM/dd"
-        onChange={(date) => {
-          const newValue = moment(date).format("YYYY/MM/DD");
-          handleStateEditing(newValue);
-        }}
-      />
+        <DatePicker
+          selected={selectedDate}
+          className="form-control datepicker overflow-y-auto max-h-48"
+          dateFormat="yyyy/MM/dd"
+          onChange={(date) => {
+            const newValue = moment(date).format("YYYY/MM/DD");
+            setEditingAnswerByModal(newValue);
+          }}
+        />
     );
   }
   if (answerType === "boolean") {
@@ -59,7 +59,7 @@ export const getEditInput = (question: Question | undefined, editingAnswer: any,
           checked={editingAnswer === yesValue}
           onChange={(e) => {
             const value = e.target.checked ? yesValue : noValue;
-            handleStateEditing(value);
+            setEditingAnswerByModal(value);
           }}
         />
         <label htmlFor="yes" className="peer-checked/draft:text-sky-500">
@@ -73,7 +73,7 @@ export const getEditInput = (question: Question | undefined, editingAnswer: any,
           checked={editingAnswer === noValue}
           onChange={(e) => {
             const value = e.target.checked ? noValue : yesValue;
-            handleStateEditing(value);
+            setEditingAnswerByModal(value);
           }}
         />
         <label htmlFor="no" className="peer-checked/draft:text-sky-500">
@@ -94,7 +94,7 @@ export const getEditInput = (question: Question | undefined, editingAnswer: any,
         }
       }}
       onChange={(event) => {
-        handleStateEditing(event.target.value);
+        setEditingAnswerByModal(event.target.value);
       }}
     />
   );

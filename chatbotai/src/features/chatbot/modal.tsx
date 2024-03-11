@@ -1,9 +1,9 @@
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Question } from "../../questions";
-import { getEditInput } from "../chatbot/AnswerType";
+import { getEditInput } from "./AnswerType";
 import { useAppDispatch } from "../../app/hooks";
-import { setAnswersArray } from "../chatbot/ChatbotSlice";
+import { setAnswersArray } from "./ChatbotSlice";
 import { setError } from "../../AppSlice";
 interface ModalProps {
   questionIndexInModal: number;
@@ -22,9 +22,9 @@ export default function Modal({
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
   const dispatch = useAppDispatch();
-  const [editingAnswerByModal, setEditingAnswerByModal] = useState<any>(editingAnswer);
   const questionObj: Question | undefined =
     displayQuestions && displayQuestions[questionIndexInModal];
+    const [editingAnswerByModal, setEditingAnswerByModal] = useState<any>(questionObj?.answer);
   const handleAnswerByModal = () => {
     if (!editingAnswerByModal) {
       dispatch(setError("Please enter your answer"));
@@ -52,6 +52,7 @@ export default function Modal({
         className="relative z-10"
         initialFocus={cancelButtonRef}
         onClose={setOpen}
+        
       >
         <Transition.Child
           as={Fragment}

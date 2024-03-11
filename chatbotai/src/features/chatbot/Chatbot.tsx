@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { setAnswersArray, answersArray} from "./ChatbotSlice";
+import { setAnswersArray, answersArray } from "./ChatbotSlice";
 import { questions, Question } from "../../questions";
 import { getEditInput } from "./AnswerType";
 import { setError } from "../../AppSlice";
@@ -10,20 +10,29 @@ import { SiProbot } from "react-icons/si";
 import { PiPencilBold } from "react-icons/pi";
 
 const Chatbot = () => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  // const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [editingAnswer, setEditingAnswer] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [questionIndexInModal, setQuestionIndexInModal] = useState<number>(-1);
   const answers = useAppSelector(answersArray);
   const dispatch = useAppDispatch();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [showEndMessage, setShowEndMessage] = useState(false);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  useEffect(() => {
+    setShowEndMessage(false);
+  }, [])
   const displayQuestions: Question[] | undefined = useMemo(() => {
     if (!questions) return;
     const result: Question[] = [];
-    if (answers) {
+    if (answers.length === 0) {
+      const questionTime = new Date();
+      questions[0].questionTimestamp = questionTime;
+      result.push(questions[0]);
+      return result;
+    } else {
       answers.forEach((answer) => {
         const questionConfig = questions.find(
           (item) => item.id === answer.id
@@ -32,31 +41,22 @@ const Chatbot = () => {
           result.push({ ...answer, ...questionConfig });
         }
       });
-    } else {
-      const questionTime = new Date();
-      questions[0].questionTimestamp = questionTime;
-      result.push(questions[0]);
     }
-    const { nextQuestion } = questions[currentQuestionIndex];
-    if (nextQuestion?.length === 1 && nextQuestion[0]?.value === null) {
-      const nextQuestionId: number = nextQuestion[0]?.id;
-      const nextQuestionConfig: Question | undefined = questions.find(
-        (item) => item.id === nextQuestionId
-      );
-      if (nextQuestionConfig) {
-        const questionTime = new Date();
-        nextQuestionConfig.questionTimestamp = questionTime;
-        result.push(nextQuestionConfig);
+    // find the last question in the answers array
+    const id = result.length > 0 && result[result.length - 1].id;
+    const answer = result.length > 0 && result[result.length - 1].answer;
+    const lastAnswerQuestionConfig: Question | undefined = questions.find(
+      (item) => item.id === id
+    );
+    // push the next question to the result array
+    if (lastAnswerQuestionConfig) {
+      const { nextQuestion } = lastAnswerQuestionConfig;
+      const nextQuestionId = nextQuestion?.length === 1 ? nextQuestion[0]?.id : nextQuestion?.filter((obj) => obj.value === answer)[0]?.id;
+      if (!nextQuestionId) {
+        setShowEndMessage(true);
+        return result;
       }
-      setEditingAnswer("");
-    } else {
-      const nextQuestionId: number | undefined = nextQuestion?.find(
-        (item) => item.value === editingAnswer
-      )?.id;
-      setEditingAnswer("");
-      const nextQuestionConfig: Question | undefined = questions.find(
-        (item) => item.id === nextQuestionId
-      );
+      const nextQuestionConfig: Question | undefined = questions.find((question) => question.id === nextQuestionId);
       if (nextQuestionConfig) {
         const questionTime = new Date();
         nextQuestionConfig.questionTimestamp = questionTime;
@@ -65,23 +65,26 @@ const Chatbot = () => {
     }
     console.log(result);
     return result;
-  }, [answers, currentQuestionIndex]);
+  }, [answers, showEndMessage]);
   useEffect(scrollToBottom, [displayQuestions]);
   const handleAnswer = () => {
     if (!editingAnswer) {
       dispatch(setError("Please enter your answer"));
       return;
     };
+    const currentQuestion = displayQuestions?.[displayQuestions.length - 1] as Question;
     dispatch(
-      setAnswersArray({answerObj: {
-        id: displayQuestions?.[currentQuestionIndex].id,
-        answer: editingAnswer,
-        questionTimestamp:
-          displayQuestions?.[currentQuestionIndex].questionTimestamp,
-        answerTimestamp: new Date(),
-      }, fromModal: false})
+      setAnswersArray({
+        answerObj: {
+          id: currentQuestion.id,
+          answer: editingAnswer,
+          questionTimestamp: currentQuestion.questionTimestamp,
+          answerTimestamp: new Date(),
+        }, fromModal: false
+      })
     );
-    setCurrentQuestionIndex(currentQuestionIndex + 1);
+    // setCurrentQuestionIndex(currentQuestionIndex + 1);
+    setEditingAnswer("");
   };
   const timeLocalizer = (time: any) => {
     if (!time) return;
@@ -114,9 +117,8 @@ const Chatbot = () => {
               return (
                 <React.Fragment key={i}>
                   <li
-                    className={`flex flex-col justify-start gap-y-0.5 ${
-                      i === items.length - 1 ? styles.slow : ""
-                    }`}
+                    className={`flex flex-col justify-start gap-y-0.5 ${i === items.length - 1 ? styles.slow : ""
+                      }`}
                     key={i + "b"}
                   >
                     <div>
@@ -130,55 +132,67 @@ const Chatbot = () => {
                     <div className="text-xs">{timeLocalizer(questionTimestamp)}</div>
                     <div ref={messagesEndRef} />
                   </li>
-                  {i < items.length - 1 && (
-                    <li className="flex flex-col gap-y-0.5" key={i + "a"}>
-                      <div className="flex flex-row justify-end items-center gap-x-0.5">
-                        <span className="bg-indigo-600 text-[#f1f5f9] px-2 py-1.5">
-                          {answer}
-                        </span>
-                        <PiPencilBold className="w-5 h-5 fill-cyan-500" onClick={() => {
-                          setEditingAnswer(answer);
-                          setShowModal(true);
-                          setQuestionIndexInModal(i);
-                          }}/>
-                      </div>
-                      <div className="flex justify-end text-xs">{timeLocalizer(answerTimestamp)}</div>
-                      <div ref={messagesEndRef} />
-                    </li>
-                  )}
+                  {(i < displayQuestions.length - 1 || (i === displayQuestions.length - 1 && showEndMessage)) && <li className="flex flex-col gap-y-0.5" key={i + "a"}>
+                    <div className="flex flex-row justify-end items-center gap-x-0.5">
+                      <span className="bg-indigo-600 text-[#f1f5f9] px-2 py-1.5">
+                        {answer}
+                      </span>
+                      <PiPencilBold className="w-5 h-5 fill-cyan-500" onClick={() => {
+                        // setEditingAnswer(answer);
+                        setShowModal(true);
+                        setQuestionIndexInModal(i);
+                      }} />
+                    </div>
+                    <div className="flex justify-end text-xs">{timeLocalizer(answerTimestamp)}</div>
+                    <div ref={messagesEndRef} />
+                  </li>}
                 </React.Fragment>
               );
             })}
+          {showEndMessage && <li
+            className="flex flex-col justify-start gap-y-0.5"
+          >
+            <div>
+              <div className="flex flex-row gap-x-1.5">
+                <SiProbot className="w-8 h-8 fill-cyan-500" />
+                <div className="bg-[#1da1f2] text-[#f1f5f9] px-2 py-1.5 rounded-sm">
+                  You have reached the end question. Thank you for your time.
+                </div>
+              </div>
+            </div>
+            <div ref={messagesEndRef} />
+          </li>}
         </ul>
-
         {/* submit answer */}
         <div className="px-4 border-top d-none d-md-block">
           <div>
-            <div className="row h-100 p-2 w-100 p-lg-3 d-flex flex-row">
-              <div className="col-12 col-sm-12 col-md-12 col-lg-8">
-                {displayQuestions &&
-                  getEditInput(
-                    displayQuestions[currentQuestionIndex],
-                    editingAnswer,
-                    handleStateEditingAnswer,
-                    handleAnswer
-                  )}
+            {!showEndMessage && (
+              <div className="row h-100 p-2 w-100 p-lg-3 d-flex flex-row">
+                <div className="col-12 col-sm-12 col-md-12 col-lg-8">
+                  {displayQuestions &&
+                    getEditInput(
+                      displayQuestions[displayQuestions.length - 1],
+                      editingAnswer,
+                      handleStateEditingAnswer,
+                      handleAnswer
+                    )}
+                </div>
+                <div className="col-12 col-sm-12 col-md-12 col-lg-4">
+                  <button
+                    className="btn btn-primary"
+                    style={{ margin: "10px" }}
+                    onClick={() => handleAnswer()}
+                  >
+                    Send
+                  </button>
+                </div>
               </div>
-              <div className="col-12 col-sm-12 col-md-12 col-lg-4">
-                <button
-                  className="btn btn-primary"
-                  style={{ margin: "10px" }}
-                  onClick={handleAnswer}
-                >
-                  Send
-                </button>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
       {
-        showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions} handleStateShowModal={handleStateShowModal} editingAnswer={editingAnswer}/>
+        showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions} handleStateShowModal={handleStateShowModal} editingAnswer={editingAnswer} />
       }
     </div>
   );
