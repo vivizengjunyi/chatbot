@@ -24,7 +24,7 @@ export default function Modal({
   const dispatch = useAppDispatch();
   const questionObj: Question | undefined =
     displayQuestions && displayQuestions[questionIndexInModal];
-    const [editingAnswerByModal, setEditingAnswerByModal] = useState<any>(questionObj?.answer);
+  const [editingAnswerByModal, setEditingAnswerByModal] = useState<any>(questionObj?.answer);
   const handleAnswerByModal = () => {
     if (!editingAnswerByModal) {
       dispatch(setError("Please enter your answer"));
@@ -35,7 +35,7 @@ export default function Modal({
     const id: number | undefined = questionObj?.id;
     dispatch(
       setAnswersArray({
-        answerObj: { id, answer: editingAnswerByModal, answerTimestamp: new Date() },
+        answerObj: { id, answer: editingAnswerByModal, answerTimestamp: new Date().toISOString() },
         fromModal: true,
       })
     );
@@ -52,7 +52,6 @@ export default function Modal({
         className="relative z-10"
         initialFocus={cancelButtonRef}
         onClose={setOpen}
-        
       >
         <Transition.Child
           as={Fragment}
@@ -115,7 +114,7 @@ export default function Modal({
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => {setOpen(false); handleStateShowModal(false);}}
+                    onClick={() => { setOpen(false); handleStateShowModal(false); }}
                     ref={cancelButtonRef}
                   >
                     Cancel

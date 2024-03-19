@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { setAnswersArray, answersArray } from "./ChatbotSlice";
+import { setAnswersArray, answersArray, Answer } from "./ChatbotSlice";
 import { questions, Question } from "../../questions";
 import { getEditInput } from "./AnswerType";
 import { setError } from "../../AppSlice";
@@ -24,23 +24,50 @@ const Chatbot = () => {
   useEffect(() => {
     setShowEndMessage(false);
   }, [])
+  console.log('answers', answers);
   const displayQuestions: Question[] | undefined = useMemo(() => {
     if (!questions) return;
     const result: Question[] = [];
     if (answers.length === 0) {
-      const questionTime = new Date();
+      const questionTime = new Date().toISOString();
       questions[0].questionTimestamp = questionTime;
       result.push(questions[0]);
       return result;
     } else {
-      answers.forEach((answer) => {
-        const questionConfig = questions.find(
-          (item) => item.id === answer.id
-        ) as Question;
-        if (questionConfig) {
-          result.push({ ...answer, ...questionConfig });
+      // find the frist question in the answers array and push it to the result array
+      let currentQuestionId: number | null | undefined = questions[0].id;
+      let currentAnswer = answers.find((item) => item.id === currentQuestionId);
+      if (currentAnswer) {
+        result.push({ ...currentAnswer, ...questions[0] });
+      } else {
+        return;
+      }
+      const findNextQuestion = (nextQuestionInfo: Question["nextQuestion"], currentAnswer: Answer) => {
+        if (nextQuestionInfo?.length === 1) {
+          return nextQuestionInfo[0].id;
+        } else {
+          return nextQuestionInfo?.find((obj) => obj.value === currentAnswer.answer)?.id;
         }
-      });
+
+      }
+      // handle the rest of the questions
+      while (currentAnswer) {
+        let nextQuestionInfo = questions.find(q => q.id === currentQuestionId)?.nextQuestion;
+        if (!nextQuestionInfo || nextQuestionInfo.length === 0) break;
+        let nextQuestionId: number | null | undefined = findNextQuestion(nextQuestionInfo, currentAnswer);
+        currentQuestionId = nextQuestionId;
+        currentAnswer = answers.find(item => item.id === nextQuestionId);
+        if (currentAnswer) {
+          let nextQuestion = questions.find(q => q.id === nextQuestionId);
+          if (nextQuestion) {
+            result.push({ ...currentAnswer, ...nextQuestion });
+          } else {
+            break;
+          }
+        } else {
+          break;
+        }
+      }
     }
     // find the last question in the answers array
     const id = result.length > 0 && result[result.length - 1].id;
@@ -58,14 +85,14 @@ const Chatbot = () => {
       }
       const nextQuestionConfig: Question | undefined = questions.find((question) => question.id === nextQuestionId);
       if (nextQuestionConfig) {
-        const questionTime = new Date();
+        const questionTime = new Date().toISOString();
         nextQuestionConfig.questionTimestamp = questionTime;
         result.push(nextQuestionConfig);
       }
     }
     console.log(result);
     return result;
-  }, [answers, showEndMessage]);
+  }, [answers, showEndMessage, questions]);
   useEffect(scrollToBottom, [displayQuestions]);
   const handleAnswer = () => {
     if (!editingAnswer) {
@@ -78,8 +105,8 @@ const Chatbot = () => {
         answerObj: {
           id: currentQuestion.id,
           answer: editingAnswer,
-          questionTimestamp: currentQuestion.questionTimestamp,
-          answerTimestamp: new Date(),
+          questionTimestamp: typeof currentQuestion.questionTimestamp === 'string' ? currentQuestion.questionTimestamp : currentQuestion.questionTimestamp.toISOString(),
+          answerTimestamp: new Date().toISOString(),
         }, fromModal: false
       })
     );

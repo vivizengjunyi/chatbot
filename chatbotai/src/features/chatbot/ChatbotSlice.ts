@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
+import { questions } from "../../questions";
 
 export interface Answer {
   id: number | undefined;
