@@ -1,13 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import { questions } from "../../questions";
+import {getAnswersFromLocalStorage, setAnswersToLocalStorage} from "../../localStorage";
+import { Question } from "../../questions";
 
 export interface Answer {
-  id: number | undefined;
+  id: Question["id"] | undefined;
   answer: string | undefined;
   questionTimestamp?: Date | string;
   answerTimestamp: Date | string;
 }
+
+const answersFromLocalStorage = getAnswersFromLocalStorage();
 
 export interface ActionPayload {
   answerObj: Answer,
@@ -19,7 +22,7 @@ export interface AnswerState {
 }
 
 const initialState: AnswerState = {
-  answers: [],
+  answers: answersFromLocalStorage || [],
 };
 
 const chatbotSlice = createSlice({
@@ -29,6 +32,7 @@ const chatbotSlice = createSlice({
     setAnswersArray: (state, action: PayloadAction<ActionPayload>) => {
       if (!action.payload.fromModal) {
         state.answers = [...state.answers, action.payload.answerObj];
+        setAnswersToLocalStorage(state.answers);
         return;
       } else {
         const findMatch: Answer | undefined = state.answers.find(item => item.id === action.payload.answerObj.id);
@@ -38,11 +42,16 @@ const chatbotSlice = createSlice({
         }else {
           return;
         }
+        setAnswersToLocalStorage(state.answers);
       }
     },
+    resetConversation: (state) => {
+      state.answers = [];
+      setAnswersToLocalStorage(state.answers);
+    }
   },
 });
-export const { setAnswersArray } = chatbotSlice.actions;
+export const { setAnswersArray, resetConversation } = chatbotSlice.actions;
 export const answersArray = (state: RootState) => state.chatbotReducer.answers;
 
 export default chatbotSlice.reducer;

@@ -1,5 +1,5 @@
 export interface Question {
-    id: number;
+    id: number | string;
     question: string;
     answerType: string;
     options: { id: number; name: string }[] | null;
@@ -421,7 +421,7 @@ export const questions: Question[] = [
     {
         id: 16,
         question: 'What is your phone number?',
-        answerType: 'text',
+        answerType: 'phone',
         options: null,
         nextQuestion: [{
             id: 17,
@@ -517,7 +517,7 @@ export const questions: Question[] = [
     {
         id: 24,
         question: 'What is your job description?',
-        answerType: 'date',
+        answerType: 'text',
         options: null,
         nextQuestion: [
             {

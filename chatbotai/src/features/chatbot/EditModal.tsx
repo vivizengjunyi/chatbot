@@ -9,15 +9,11 @@ interface ModalProps {
   questionIndexInModal: number;
   displayQuestions: Question[] | undefined;
   handleStateShowModal: any;
-  // handleStateEditingAnswer: any;
-  editingAnswer: any;
 }
 export default function Modal({
   questionIndexInModal,
   displayQuestions,
-  handleStateShowModal,
-  // handleStateEditingAnswer,
-  editingAnswer,
+  handleStateShowModal
 }: ModalProps) {
   const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
@@ -31,15 +27,25 @@ export default function Modal({
       handleStateShowModal(false);
       return;
     }
+    // validate email
+    if (questionObj?.answerType === "email") {
+      const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+      if (!regex.test(editingAnswerByModal)) {
+        dispatch(
+          setError("Please enter a valid email address")
+        );
+        return;
+      }
+    }
     // update redux store
-    const id: number | undefined = questionObj?.id;
+    const id: Question["id"] | undefined = questionObj?.id;
     dispatch(
       setAnswersArray({
         answerObj: { id, answer: editingAnswerByModal, answerTimestamp: new Date().toISOString() },
         fromModal: true,
       })
     );
-    // handleStateEditingAnswer("");
+    setEditingAnswerByModal("");
     handleStateShowModal(false);
   };
   const handleStateEditingAnswerByModal = (value: any) => {
@@ -87,15 +93,14 @@ export default function Modal({
                         {questionObj && questionObj.question}
                       </Dialog.Title>
                       <div className="mt-2">
-                        <p className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500">
                           {getEditInput(
                             questionObj,
-                            // questionObj?.answer,
                             editingAnswerByModal,
                             handleStateEditingAnswerByModal,
                             handleAnswerByModal
                           )}
-                        </p>
+                        </div>
                       </div>
                     </div>
                   </div>

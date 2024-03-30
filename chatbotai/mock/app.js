@@ -3,6 +3,10 @@ const express = require("express");
 const app = express();
 const port = 4000;
 
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  next();
+});
 // api for logging in
 app.post("api/v1/token", (req, res) => {
   res.json({
