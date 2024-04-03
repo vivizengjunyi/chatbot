@@ -2,10 +2,13 @@
 module.exports = {
   content: ["./src/**/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+    },
     height: {
-      '400': '500px',
+      '500': '500px',
       '25': '25px',
+      '400': '400px',
+      '100vh': '100vh',
     }
   },
   variants: {

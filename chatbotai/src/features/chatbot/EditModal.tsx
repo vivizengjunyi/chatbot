@@ -24,7 +24,6 @@ export default function Modal({
   const handleAnswerByModal = () => {
     if (!editingAnswerByModal) {
       dispatch(setError("Please enter your answer"));
-      handleStateShowModal(false);
       return;
     }
     // validate email

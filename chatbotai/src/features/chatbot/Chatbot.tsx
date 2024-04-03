@@ -11,11 +11,11 @@ import styles from "./Chatbot.module.css";
 import { SiProbot } from "react-icons/si";
 import { PiPencilBold } from "react-icons/pi";
 
-const Chatbot = () => {
+function Chatbot() {
   const [editingAnswer, setEditingAnswer] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
   const [questionIndexInModal, setQuestionIndexInModal] = useState<number>(-1);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState<boolean>(false);
   const answers = useAppSelector(answersArray);
   const dispatch = useAppDispatch();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -181,24 +181,24 @@ const Chatbot = () => {
   console.log('displayQuestions', displayQuestions)
   const showEndMessage = displayQuestions && (displayQuestions[displayQuestions.length - 1]?.nextQuestion?.find(obj => obj.value === displayQuestions[displayQuestions.length - 1]?.answer && obj.id === null) ? true : false);
   return (
-    <div className="flex justify-between items-center h-screen px-4">
+    <div className="flex justify-between items-center px-4 pt-10" >
       <ChatbotFeatures />
       <div className="bg-white w-2/5 shadow-md rounded-lg">
         <div className="border-b px-6 py-4 flex justify-between items-center">
-          <span className="text-xl font-semibold">Chatbot AI</span>
+          <span className="text-xl font-bold">Resume</span>
           <div className="group relative flex items-center justify-center">
             <svg className="h-6 w-6 text-red-500 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" onClick={() => handleResetConversation()}>
               <polyline points="23 4 23 10 17 10" />
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
-            <span className="absolute left-full bottom-0 ml-2 px-2 py-1 bg-blue-500 text-sm text-white rounded-lg shadow opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-in-out">
+            <span className="absolute left-full bottom-0 ml-2 px-2 py-1 bg-blue-500 text-sm text-white rounded-lg shadow opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-in-out font-sans">
               Reset
             </span>
           </div>
         </div>
         <div className="overflow-y-auto h-[500px]">
           {/* Messages */}
-          <ul className="p-4">
+          <ul className="p-4 font-sans">
             {displayQuestions &&
               displayQuestions.map((item, i, items) => {
                 const { answer, questionTimestamp, answerTimestamp, question } = item;
@@ -271,16 +271,15 @@ const Chatbot = () => {
       {showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions} handleStateShowModal={handleStateShowModal} />}
       <div className="flex justify-center w-1/5">
         <button
-          disabled={showEndMessage}
-          onClick={() => setShowPreviewModal(true)}
           type="button"
           value="Preview"
-          className="w-full sm:w-auto bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          className={`w-full sm:w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform ${showEndMessage ? 'hover:bg-blue-700 hover:scale-105 focus:ring-2 focus:ring-blue-300' : 'opacity-50 cursor-not-allowed'} `}
+          onClick={() => showEndMessage && setShowPreviewModal(true)}
         >
           Preview
         </button>
       </div>
-      {showPreviewModal && <PreviewModal />}
+      {showPreviewModal && <PreviewModal setShowPreviewModal={setShowPreviewModal} answers={answers} showPreviewModal={showPreviewModal}/>}
     </div>
   );
 };
