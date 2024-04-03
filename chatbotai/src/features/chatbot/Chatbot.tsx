@@ -269,17 +269,19 @@ function Chatbot() {
         </div>
       </div>
       {showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions} handleStateShowModal={handleStateShowModal} />}
-      <div className="flex justify-center w-1/5">
-        <button
-          type="button"
-          value="Preview"
-          className={`w-full sm:w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform ${showEndMessage ? 'hover:bg-blue-700 hover:scale-105 focus:ring-2 focus:ring-blue-300' : 'opacity-50 cursor-not-allowed'} `}
-          onClick={() => showEndMessage && setShowPreviewModal(true)}
-        >
-          Preview
-        </button>
+      <div className="w-1/5 flex">
+        <div className="flex -translate-x-20 -translate-y-80 pt-20 mt-10">
+          <button
+            type="button"
+            value="Preview"
+            className={`sm:w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform ${showEndMessage ? 'hover:bg-blue-700 hover:scale-105 focus:ring-2 focus:ring-blue-300' : 'opacity-50 cursor-not-allowed'} `}
+            onClick={() => showEndMessage && setShowPreviewModal(true)}
+          >
+            Preview
+          </button>
+        </div>
       </div>
-      {showPreviewModal && <PreviewModal setShowPreviewModal={setShowPreviewModal} answers={answers} showPreviewModal={showPreviewModal}/>}
+      {showPreviewModal && <PreviewModal setShowPreviewModal={setShowPreviewModal} answers={answers} showPreviewModal={showPreviewModal} />}
     </div>
   );
 };
