@@ -40,7 +40,7 @@ function App() {
         </div>
       </div>
       <h1 className="text-3xl font-bold text-gray-800 mb-8 ml-2 pt-5 text-center">Chatbot AI -  React, Redux and TypeScript project</h1>
-      <Router basename="/chatbotai">
+      <Router basename="/">
         <Switch>
           {/* <Route exact path="/" component={Home} />
           <Route exact path="/login" component={SignIn}></Route> */}
