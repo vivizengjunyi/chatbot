@@ -8,8 +8,8 @@ import Modal from "./EditModal";
 import ChatbotFeatures from "./ChatbotFeatures";
 import PreviewModal from "./PreviewModal";
 import styles from "./Chatbot.module.css";
-import { SiProbot } from "react-icons/si";
 import { PiPencilBold } from "react-icons/pi";
+import logo from '../../image/chabot.png'
 
 function Chatbot() {
   const [editingAnswer, setEditingAnswer] = useState("");
@@ -181,24 +181,34 @@ function Chatbot() {
   console.log('displayQuestions', displayQuestions)
   const showEndMessage = displayQuestions && (displayQuestions[displayQuestions.length - 1]?.nextQuestion?.find(obj => obj.value === displayQuestions[displayQuestions.length - 1]?.answer && obj.id === null) ? true : false);
   return (
-    <div className="flex justify-between items-center px-4 pt-10" >
-      <ChatbotFeatures />
-      <div className="bg-white w-2/5 shadow-md rounded-lg">
-        <div className="border-b px-6 py-4 flex justify-between items-center">
-          <span className="text-xl font-bold">Resume</span>
-          <div className="group relative flex items-center justify-center">
-            <svg className="h-6 w-6 text-red-500 cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" onClick={() => handleResetConversation()}>
+    <div className="flex flex-grow">
+      <div className="flex flex-col w-1/4 p-5 bg-[#66B032]">
+        <ChatbotFeatures />
+      </div>
+      <div className="flex flex-col w-3/4 relative">
+        <div className="flex justify-between items-center p-5 bg-[#66B032]">
+          <div className="flex justify-center items-center h-full">
+            <button
+              type="button"
+              className={`text-[#EBF7E3] font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out ${showEndMessage ? 'bg-[#375F1B] hover:bg-[#EBF7E3] hover:text-[#375F1B]  focus:outline-none' : 'bg-gray-300 cursor-not-allowed'}`}
+              onClick={() => showEndMessage && setShowPreviewModal(true)}
+              disabled={!showEndMessage}
+            >
+              Preview Answers
+            </button>
+          </div>
+          <div className="flex items-center group relative">
+            <svg className="h-6 w-6 text-white cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" onClick={() => handleResetConversation()}>
               <polyline points="23 4 23 10 17 10" />
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
-            <span className="absolute left-full bottom-0 ml-2 px-2 py-1 bg-blue-500 text-sm text-white rounded-lg shadow opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-in-out font-sans">
+            <span className="absolute right-full bottom-0 ml-0 px-2 py-1 bg-[#375F1B] text-sm text-white rounded-lg shadow opacity-0 group-hover:opacity-100 transition-opacity duration-150 ease-in-out font-sans">
               Reset
             </span>
           </div>
         </div>
-        <div className="overflow-y-auto h-[500px]">
-          {/* Messages */}
-          <ul className="p-4 font-sans">
+        <div className="p-5 overflow-y-auto" style={{ height: 'calc(100vh - 240px)' }}>
+          <ul className="p-4">
             {displayQuestions &&
               displayQuestions.map((item, i, items) => {
                 const { answer, questionTimestamp, answerTimestamp, question } = item;
@@ -211,8 +221,8 @@ function Chatbot() {
                     >
                       <div>
                         <div className="flex flex-row gap-x-1.5">
-                          <SiProbot className="fill-cyan-500 h-[30px] w-[30px] self-center" />
-                          <div className="bg-[#1da1f2] text-[#f1f5f9] px-2 py-1.5 rounded-sm">
+                          <img src={logo} alt='chatbot logo' className="fill-cyan-500 h-10 w-10 self-center" />
+                          <div className="bg-[#375F1B] text-[#f1f5f9] px-2 py-1.5 rounded-sm ">
                             {question}
                           </div>
                         </div>
@@ -222,10 +232,10 @@ function Chatbot() {
                     </li>
                     {(i < displayQuestions.length - 1 || (i === displayQuestions.length - 1 && showEndMessage)) && <li className="flex flex-col gap-y-0.5" key={i + "a"}>
                       <div className="flex flex-row justify-end items-center gap-x-0.5">
-                        <span className="bg-indigo-600 text-[#f1f5f9] px-2 py-1.5">
+                        <span className="bg-[#66B032] text-[#f1f5f9] px-2 py-1.5">
                           {answer}
                         </span>
-                        <PiPencilBold className="w-5 h-5 fill-cyan-500" onClick={() => {
+                        <PiPencilBold className="w-7 h-7 fill-[#375F1B] hover:fill-[#1B3409]" onClick={() => {
                           setShowModal(true);
                           setQuestionIndexInModal(i);
                         }} />
@@ -241,8 +251,8 @@ function Chatbot() {
             >
               <div>
                 <div className="flex flex-row gap-x-1.5">
-                  <SiProbot className="h-[30px] w-[30px] fill-cyan-500 self-center" />
-                  <div className="bg-[#1da1f2] text-[#f1f5f9] px-2 py-1.5 rounded-sm">
+                  <img src={logo} alt='chatbot logo' className="h-[30px] w-[30px] fill-cyan-500 self-center" />
+                  <div className="bg-[#375F1B] text-[#f1f5f9] px-2 py-1.5 rounded-sm">
                     You have reached the end question. Thank you for your time.
                   </div>
                 </div>
@@ -251,8 +261,7 @@ function Chatbot() {
             </li>}
           </ul>
         </div>
-        <div className="px-4 py-3 border-t bg-gray-50">
-          {/* Input area */}
+        <div className="p-5 bg-green-100 absolute bottom-0 w-full">
           {!showEndMessage &&
             <div className="flex items-center space-x-2">
               {displayQuestions &&
@@ -262,25 +271,13 @@ function Chatbot() {
                   handleStateEditingAnswer,
                   handleAnswer
                 )}
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200" onClick={() => handleAnswer()}>
+              <button className="bg-[#66B032] hover:bg-[#1B3409] text-white font-bold py-2 px-4 rounded-lg transition duration-200 Condensed title-font" onClick={() => handleAnswer()}>
                 Send
               </button>
             </div>}
         </div>
       </div>
-      {showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions} handleStateShowModal={handleStateShowModal} />}
-      <div className="w-1/5 flex">
-        <div className="flex -translate-x-20 -translate-y-80 pt-20 mt-10">
-          <button
-            type="button"
-            value="Preview"
-            className={`sm:w-auto bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform ${showEndMessage ? 'hover:bg-blue-700 hover:scale-105 focus:ring-2 focus:ring-blue-300' : 'opacity-50 cursor-not-allowed'} `}
-            onClick={() => showEndMessage && setShowPreviewModal(true)}
-          >
-            Preview
-          </button>
-        </div>
-      </div>
+      {showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions} setShowModal={setShowModal} showModal={showModal}/>}
       {showPreviewModal && <PreviewModal setShowPreviewModal={setShowPreviewModal} answers={answers} showPreviewModal={showPreviewModal} />}
     </div>
   );

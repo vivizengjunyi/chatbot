@@ -8,14 +8,15 @@ import { setError } from "../../AppSlice";
 interface ModalProps {
   questionIndexInModal: number;
   displayQuestions: Question[] | undefined;
-  handleStateShowModal: any;
+  setShowModal: any;
+  showModal: boolean;
 }
 export default function Modal({
   questionIndexInModal,
   displayQuestions,
-  handleStateShowModal
+  setShowModal,
+  showModal
 }: ModalProps) {
-  const [open, setOpen] = useState(true);
   const cancelButtonRef = useRef(null);
   const dispatch = useAppDispatch();
   const questionObj: Question | undefined =
@@ -45,18 +46,18 @@ export default function Modal({
       })
     );
     setEditingAnswerByModal("");
-    handleStateShowModal(false);
+    setShowModal(false);
   };
   const handleStateEditingAnswerByModal = (value: any) => {
     setEditingAnswerByModal(value);
   }
   return (
-    <Transition.Root show={open} as={Fragment}>
+    <Transition.Root show={showModal} as={Fragment}>
       <Dialog
         as="div"
         className="relative z-10"
         initialFocus={cancelButtonRef}
-        onClose={setOpen}
+        onClose={() => setShowModal(false)}
       >
         <Transition.Child
           as={Fragment}
@@ -107,18 +108,17 @@ export default function Modal({
                 <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                    className="inline-flex w-full justify-center rounded-md bg-[#66B032] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#1B3409] sm:ml-3 sm:w-auto"
                     onClick={() => {
-                      setOpen(false);
                       handleAnswerByModal();
                     }}
                   >
-                    confirm
+                    Confirm
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => { setOpen(false); handleStateShowModal(false); }}
+                    onClick={() => setShowModal(false)}
                     ref={cancelButtonRef}
                   >
                     Cancel

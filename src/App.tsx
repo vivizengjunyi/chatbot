@@ -7,6 +7,7 @@ import NotFound from "./features/notFound/NotFound";
 import Chatbot from "./features/chatbot/Chatbot";
 import { useAppSelector } from "./app/hooks";
 import { setError } from "./AppSlice";
+import logo from './image/chabot.png';
 
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
     return () => clearTimeout(timer);
   }, [errorMessage]);
   return (
-    <div className="w-full h-[100vh]">
+    <div className="w-full h-[100vh] flex flex-col justify-self-center bg-[#EBF7E3]">
       <div
         id="toast-container"
         className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-xs p-4"
@@ -39,7 +40,11 @@ function App() {
           {toast}
         </div>
       </div>
-      <h1 className="text-3xl font-bold text-gray-800 mb-8 ml-2 pt-5 text-center">Chatbot AI -  React, Redux and TypeScript project</h1>
+      <div className="flex items-center bg-[#EBF7E3] p-4 shadow-md">
+        <img src={logo} alt="chatbot logo" className="h-20 w-20 mr-4" />
+        <h1 className="text-3xl font-bold text-[#1B3409]">Chatbot AI - React, Redux, TypeScript & Tailwind CSS project</h1>
+      </div>
+
       <Router basename="/chat">
         <Switch>
           {/* <Route exact path="/" component={Home} />
