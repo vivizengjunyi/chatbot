@@ -10,7 +10,7 @@ export default function ChatbotFeatures() {
     ];
     return (
         <div>
-            <h2 className="text-2xl font-bold text-gray-800">Chatbot AI Features</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-7">Chatbot AI Features</h2>
             <div className="mt-4">
                 <ul className="space-y-4">
                     {features.map((feature, index) => (

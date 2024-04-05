@@ -190,11 +190,11 @@ function Chatbot() {
           <div className="flex justify-center items-center h-full">
             <button
               type="button"
-              className={`text-[#EBF7E3] font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out ${showEndMessage ? 'bg-[#375F1B] hover:bg-[#EBF7E3] hover:text-[#375F1B]  focus:outline-none' : 'bg-gray-300 cursor-not-allowed'}`}
+              className={`text-[#375F1B]] font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out ${showEndMessage ? 'bg-[#EBF7E3] hover:bg-[#375F1B] hover:text-[#EBF7E3]  focus:outline-none' : 'bg-gray-300 cursor-not-allowed'}`}
               onClick={() => showEndMessage && setShowPreviewModal(true)}
               disabled={!showEndMessage}
             >
-              Preview Answers
+              Preview
             </button>
           </div>
           <div className="flex items-center group relative">
@@ -207,7 +207,7 @@ function Chatbot() {
             </span>
           </div>
         </div>
-        <div className="p-5 overflow-y-auto" style={{ height: 'calc(100vh - 240px)' }}>
+        <div className="p-5 overflow-y-auto" style={{ height: 'calc(100vh - 270px)' }}>
           <ul className="p-4">
             {displayQuestions &&
               displayQuestions.map((item, i, items) => {
@@ -221,10 +221,10 @@ function Chatbot() {
                     >
                       <div>
                         <div className="flex flex-row gap-x-1.5">
-                          <img src={logo} alt='chatbot logo' className="fill-cyan-500 h-10 w-10 self-center" />
-                          <div className="bg-[#375F1B] text-[#f1f5f9] px-2 py-1.5 rounded-sm ">
+                          <img src={logo} alt='chatbot logo' className="h-10 w-10 self-center" />
+                          <span className="bg-[#375F1B] text-[#f1f5f9] px-2 py-1.5 rounded-md">
                             {question}
-                          </div>
+                          </span>
                         </div>
                       </div>
                       <div className="text-xs">{timeLocalizer(questionTimestamp)}</div>
@@ -232,7 +232,7 @@ function Chatbot() {
                     </li>
                     {(i < displayQuestions.length - 1 || (i === displayQuestions.length - 1 && showEndMessage)) && <li className="flex flex-col gap-y-0.5" key={i + "a"}>
                       <div className="flex flex-row justify-end items-center gap-x-0.5">
-                        <span className="bg-[#66B032] text-[#f1f5f9] px-2 py-1.5">
+                        <span className="bg-[#66B032] text-[#f1f5f9] px-2 py-1.5 rounded-md">
                           {answer}
                         </span>
                         <PiPencilBold className="w-7 h-7 fill-[#375F1B] hover:fill-[#1B3409]" onClick={() => {
@@ -251,9 +251,9 @@ function Chatbot() {
             >
               <div>
                 <div className="flex flex-row gap-x-1.5">
-                  <img src={logo} alt='chatbot logo' className="h-[30px] w-[30px] fill-cyan-500 self-center" />
+                  <img src={logo} alt='chatbot logo' className="h-10 w-10 self-center" />
                   <div className="bg-[#375F1B] text-[#f1f5f9] px-2 py-1.5 rounded-sm">
-                    You have reached the end question. Thank you for your time.
+                    You've reached the final question. Press the Preview button to review all your answers.
                   </div>
                 </div>
               </div>
@@ -277,7 +277,7 @@ function Chatbot() {
             </div>}
         </div>
       </div>
-      {showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions} setShowModal={setShowModal} showModal={showModal}/>}
+      {showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions} setShowModal={setShowModal} showModal={showModal} />}
       {showPreviewModal && <PreviewModal setShowPreviewModal={setShowPreviewModal} answers={answers} showPreviewModal={showPreviewModal} />}
     </div>
   );
