@@ -27,12 +27,21 @@ export default function Modal({
       dispatch(setError("Please enter your answer"));
       return;
     }
-    // validate email
+    // validate email & phone number
     if (questionObj?.answerType === "email") {
       const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
       if (!regex.test(editingAnswerByModal)) {
         dispatch(
           setError("Please enter a valid email address")
+        );
+        return;
+      }
+    }
+    if (questionObj?.answerType === "phone") {
+      const phoneRegex = /^\d{3}-\d{3}-\d{4}$/; 
+      if (!phoneRegex.test(editingAnswerByModal)) {
+        dispatch(
+          setError("Please enter a valid phone number")
         );
         return;
       }

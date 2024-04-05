@@ -136,12 +136,21 @@ function Chatbot() {
     };
     const currentQuestion = displayQuestions?.[displayQuestions.length - 1] as Question;
     const { answerType } = currentQuestion;
-    // validate email
+    // validate email & phone number
     if (answerType === "email") {
       const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
       if (!regex.test(editingAnswer)) {
         dispatch(
           setError("Please enter a valid email address")
+        );
+        return;
+      }
+    }
+    if (answerType === "phone") {
+      const phoneRegex = /^\d{3}-\d{3}-\d{4}$/; 
+      if (!phoneRegex.test(editingAnswer)) {
+        dispatch(
+          setError("Please enter a valid phone number")
         );
         return;
       }
@@ -170,9 +179,6 @@ function Chatbot() {
   };
   const handleStateEditingAnswer = (value: any) => {
     setEditingAnswer(value);
-  }
-  const handleStateShowModal = (value: boolean) => {
-    setShowModal(value);
   }
   const handleResetConversation = () => {
     dispatch(resetConversation());
