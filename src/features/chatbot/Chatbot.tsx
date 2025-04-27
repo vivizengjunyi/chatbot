@@ -3,26 +3,29 @@ import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { setAnswersArray, answersArray, Answer, resetConversation } from "./ChatbotSlice";
 import { questions, Question } from "../../questions";
 import { getEditInput } from "./AnswerType";
-import { setError } from "../../AppSlice";
 import Modal from "./EditModal";
 import ChatbotFeatures from "./ChatbotFeatures";
 import PreviewModal from "./PreviewModal";
 import styles from "./Chatbot.module.css";
 import { PiPencilBold } from "react-icons/pi";
 import logo from '../../image/chabot.png'
-
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import { validateAnswer } from "./utils";
 function Chatbot() {
   const [editingAnswer, setEditingAnswer] = useState("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [questionIndexInModal, setQuestionIndexInModal] = useState<number>(-1);
   const [showPreviewModal, setShowPreviewModal] = useState<boolean>(false);
+  const [showResetModal, setShowResetModal] = useState<boolean>(false);
   const answers = useAppSelector(answersArray);
   const dispatch = useAppDispatch();
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-  // console.log('answers', answers);
+
   const processDuplicatedQuestionId = (result: Question[], id: Question["id"] | undefined) => {
     let newId = id;
     let count = 1;
@@ -35,6 +38,7 @@ function Chatbot() {
     }
     return newId;
   }
+
   const getOriginalQuestionId = (questionId: string | number | boolean | null) => {
     let result = questionId;
     if (typeof questionId === 'boolean' || questionId === 'null') return result;
@@ -44,6 +48,7 @@ function Chatbot() {
     }
     return result;
   };
+
   const displayQuestions: Question[] | undefined = useMemo(() => {
     if (!questions) return;
     const result: Question[] = [];
@@ -61,6 +66,7 @@ function Chatbot() {
       } else {
         return;
       }
+
       const findNextQuestion = (nextQuestionInfo: Question["nextQuestion"], currentAnswer: Answer) => {
         if (nextQuestionInfo?.length === 1) {
           return nextQuestionInfo[0].id;
@@ -68,9 +74,10 @@ function Chatbot() {
           return nextQuestionInfo?.find((obj) => obj.value === currentAnswer.answer)?.id;
         }
       }
+
       // handle the rest of the questions
       while (currentAnswer) {
-        let nextQuestionInfo = questions.find(q => q.id === currentQuestionId)?.nextQuestion;
+        let nextQuestionInfo = questions?.find(q => q.id === currentQuestionId)?.nextQuestion;
         if (!nextQuestionInfo || nextQuestionInfo.length === 0) break;
         let nextQuestionId: number | null | undefined = findNextQuestion(nextQuestionInfo, currentAnswer);
         if (nextQuestionId === null) {
@@ -102,6 +109,7 @@ function Chatbot() {
         }
       }
     }
+
     // find the last question in the answers array
     const lastQuestionId: string | number | boolean = result.length > 0 && result[result.length - 1].id
     const id = getOriginalQuestionId(lastQuestionId);
@@ -128,33 +136,17 @@ function Chatbot() {
     }
     return result;
   }, [answers]);
+
   useEffect(scrollToBottom, [displayQuestions]);
+
   const handleAnswer = () => {
-    if (!editingAnswer) {
-      dispatch(setError("Please enter your answer"));
-      return;
-    };
     const currentQuestion = displayQuestions?.[displayQuestions.length - 1] as Question;
     const { answerType } = currentQuestion;
-    // validate email & phone number
-    if (answerType === "email") {
-      const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-      if (!regex.test(editingAnswer)) {
-        dispatch(
-          setError("Please enter a valid email address")
-        );
-        return;
-      }
+
+    if (!validateAnswer(editingAnswer, answerType, dispatch)) {
+      return;
     }
-    if (answerType === "phone") {
-      const phoneRegex = /^\d{3}-\d{3}-\d{4}$/; 
-      if (!phoneRegex.test(editingAnswer)) {
-        dispatch(
-          setError("Please enter a valid phone number")
-        );
-        return;
-      }
-    }
+
     dispatch(
       setAnswersArray({
         answerObj: {
@@ -167,6 +159,7 @@ function Chatbot() {
     );
     setEditingAnswer("");
   };
+
   const timeLocalizer = (time: any) => {
     if (!time) return;
     if (typeof time === "string") {
@@ -177,15 +170,21 @@ function Chatbot() {
     }
     return time.toLocaleString("en-CA");
   };
+
   const handleStateEditingAnswer = (value: any) => {
     setEditingAnswer(value);
   }
+
   const handleResetConversation = () => {
     dispatch(resetConversation());
     setEditingAnswer("");
+    setShowResetModal(false);
   }
+
   console.log('displayQuestions', displayQuestions)
+
   const showEndMessage = displayQuestions && (displayQuestions[displayQuestions.length - 1]?.nextQuestion?.find(obj => obj.value === displayQuestions[displayQuestions.length - 1]?.answer && obj.id === null) ? true : false);
+  
   return (
     <div className="flex flex-grow">
       <div className="flex flex-col w-1/4 p-5 bg-[#66B032]">
@@ -204,7 +203,7 @@ function Chatbot() {
             </button>
           </div>
           <div className="flex items-center group relative">
-            <svg className="h-6 w-6 text-white cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" onClick={() => handleResetConversation()}>
+            <svg className="h-6 w-6 text-white cursor-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" onClick={() => setShowResetModal(true)}>
               <polyline points="23 4 23 10 17 10" />
               <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
@@ -285,6 +284,76 @@ function Chatbot() {
       </div>
       {showModal && <Modal questionIndexInModal={questionIndexInModal} displayQuestions={displayQuestions} setShowModal={setShowModal} showModal={showModal} />}
       {showPreviewModal && <PreviewModal setShowPreviewModal={setShowPreviewModal} answers={answers} showPreviewModal={showPreviewModal} />}
+      
+      <Transition.Root show={showResetModal} as={Fragment}>
+        <Dialog
+          as="div"
+          className="relative z-10"
+          onClose={setShowResetModal}
+        >
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                        <Dialog.Title
+                          as="h3"
+                          className="text-base font-semibold leading-6 text-gray-900"
+                        >
+                          Reset Conversation
+                        </Dialog.Title>
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-500">
+                            Are you sure you want to reset the conversation? All your answers will be lost and cannot be recovered.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button
+                      type="button"
+                      className="inline-flex w-full justify-center rounded-md bg-[#66B032] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#1B3409] sm:ml-3 sm:w-auto"
+                      onClick={handleResetConversation}
+                    >
+                      Reset
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={() => setShowResetModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
     </div>
   );
 };

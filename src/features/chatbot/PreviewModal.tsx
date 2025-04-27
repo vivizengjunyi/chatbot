@@ -13,6 +13,7 @@ export default function PreviewModal({ setShowPreviewModal, answers, showPreview
     const cancelButtonRef = useRef(null);
     const workExperienceIds = [19, 20, 21, 22, 23, 24];
     const educationIds = [26, 27, 28, 29, 30];
+
     useEffect(() => {
         if (answers.length > 0) {
             answers.forEach((answer: Answer) => {
@@ -31,6 +32,7 @@ export default function PreviewModal({ setShowPreviewModal, answers, showPreview
             });
         }
     }, [answers, workExperience, education]);
+
     const groupIds = (ids: Array<number | string>): (number | string)[][] => {
         const processedIds = ids.map(id => typeof id === 'number' ? `${id}:0` : id);
         const result: (number | string)[][] = [];
@@ -48,10 +50,13 @@ export default function PreviewModal({ setShowPreviewModal, answers, showPreview
         });
         return result.reverse();
     }
+
     const workExperienceQuestions = groupIds(workExperience);
     const educationQuestions = groupIds(education);
-    console.log("workExperienceQuestions", workExperienceQuestions);
-    console.log("educationQuestions", educationQuestions);
+
+    // console.log("workExperienceQuestions", workExperienceQuestions);
+    // console.log("educationQuestions", educationQuestions);
+
     const getValue = (id: string | number) => {
         let processId: string | number;
         if (typeof id === "string" && id.includes(':0')) {
@@ -61,10 +66,12 @@ export default function PreviewModal({ setShowPreviewModal, answers, showPreview
         }
         return answers.find((answer) => answer.id === processId)?.answer || "";
     }
+
     const cityQuestionIds: number[] = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
     const city = answers.find(answer => cityQuestionIds.includes(answer.id as number))?.answer || "";
     const phoneNumber = answers.find((answer) => answer.id === 16)?.answer || "";
     const professionalSummary = answers.find((answer) => answer.id === 17)?.answer || "";
+
     return (
         <Transition.Root show={showPreviewModal} as={Fragment}>
             <Dialog
